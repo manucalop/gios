@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>gios_acado</name>
+  <version>0.0.0</version>
+  <description>The gios_acado package</description>
+
+  <maintainer email="manu@todo.todo">manu</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>gios_common</depend>
+
+  <export>
+
+  </export>
+</package>
