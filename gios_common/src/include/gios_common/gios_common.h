@@ -28,33 +28,22 @@ unsigned nrn; //Number of references at end
 //}}}
 
 class Solver{//{{{
-  VariablePtrMatrix x, u, r, w, p;
-  VariablePtrVector xf, rn, wn;
-  protected:
-  void setX( const VariablePtr &var, const unsigned &step, const unsigned &pos);
-  void setU( const VariablePtr &var, const unsigned &step, const unsigned &pos);
-  void setR( const VariablePtr &var, const unsigned &step, const unsigned &pos);
-  void setW( const VariablePtr &var, const unsigned &step, const unsigned &pos);
-  void setP( const VariablePtr &var, const unsigned &step, const unsigned &pos);
-  void setXF(const VariablePtr &var, const unsigned &pos);
-  void setRN(const VariablePtr &var, const unsigned &pos);
-  void setWN(const VariablePtr &var, const unsigned &pos);
-  
   public:
-  explicit Solver(const Parameters &params);
+  explicit Solver();
   virtual ~Solver();
-  void linkState(     VariablePtr &var, const unsigned &step, const unsigned &pos) const;
-  void linkControl(   VariablePtr &var, const unsigned &step, const unsigned &pos) const;
-  void linkReference( VariablePtr &var, const unsigned &step, const unsigned &pos) const;
-  void linkWeight(    VariablePtr &var, const unsigned &step, const unsigned &pos) const;
-  void linkParameter( VariablePtr &var, const unsigned &step, const unsigned &pos) const;
+  virtual void linkState(         VariablePtr &var, const unsigned &step, const unsigned &pos) = 0;
+  virtual void linkControl(       VariablePtr &var, const unsigned &step, const unsigned &pos) = 0;
+  virtual void linkReference(     VariablePtr &var, const unsigned &step, const unsigned &pos) = 0;
+  virtual void linkWeight(        VariablePtr &var, const unsigned &pos) = 0;
+  virtual void linkDynamicWeight( VariablePtr &var, const unsigned &step, const unsigned &pos) = 0;
+  virtual void linkParameter(     VariablePtr &var, const unsigned &step, const unsigned &pos) = 0;
 
-  void linkFeedbackState( VariablePtr &var, const unsigned &pos) const;
-  void linkEndReference(  VariablePtr &var, const unsigned &pos) const;
-  void linkEndWeight(     VariablePtr &var, const unsigned &pos) const;
+  virtual void linkFeedbackState( VariablePtr &var, const unsigned &pos) = 0;
+  virtual void linkEndReference(  VariablePtr &var, const unsigned &pos) = 0;
+  virtual void linkEndWeight(     VariablePtr &var, const unsigned &pos) = 0;
 
-  void getParameters(Parameters &p) const;
-  void test_init();
+  virtual void getParameters(Parameters &p) = 0;
+  virtual void test_init();
 
   virtual void solve()=0;
   virtual void simulate()=0;

@@ -3,56 +3,58 @@
 ACADOvariables acadoVariables;
 ACADOworkspace acadoWorkspace;
 
-gios_acado::AcadoSolver::AcadoSolver(): Solver(//{{{
-    gios::Parameters{ .n   = ACADO_N, 
-                            .nx  = ACADO_NX, 
-                            .nu  = ACADO_NU, 
-                            .np  = ACADO_NOD, 
-                            .nr  = ACADO_NY, 
-                            .nrn = ACADO_NYN }
-                                              ){
-init();
-std::cout<<"Acado Solver Created"<<std::endl;
+gios_acado::AcadoSolver::AcadoSolver(){//{{{
+  acado_initializeSolver();
+  std::cout<<"Acado Solver Created"<<std::endl;
 }//}}}
 
 gios_acado::AcadoSolver::~AcadoSolver(){//{{{
   std::cout<<"Acado Solver Deleted"<<std::endl;
 };//}}}
 
-void gios_acado::AcadoSolver::init(){//{{{
-  printf("Initializing solver...\n");
-  // Initialize the solver. 
-  acado_initializeSolver();
+void gios_acado::AcadoSolver::linkState(gios::VariablePtr &var, const unsigned &step, const unsigned &pos){//{{{
+    var = &acadoVariables.x[step*ACADO_NX + pos];
+}//}}}
 
-  for(unsigned i = 0; i < ACADO_N + 1; i++){
-    
-    for (unsigned j = 0; j < ACADO_NX; j++ ){
-      setX(&acadoVariables.x[i*ACADO_NX + j], i, j);
-    }
-    
-    for (unsigned j = 0; j < ACADO_NOD; j++ ){
-      setP(&acadoVariables.od[i*ACADO_NOD + j], i, j);
-    }
-  }
-  for(unsigned i = 0; i < ACADO_N; i++){
+void gios_acado::AcadoSolver::linkFeedbackState(gios::VariablePtr &var, const unsigned &pos){//{{{
+    var = &acadoVariables.x0[pos];
+}//}}}
 
-    for (unsigned j = 0; j < ACADO_NU; j++ ){
-      setU(&acadoVariables.u[i*ACADO_NU + j], i, j);
-    }
-    
-    for (unsigned j = 0; j < ACADO_NY; j++ ){
-      setR(&acadoVariables.y[i*ACADO_NY + j], i, j);
-      setW(&acadoVariables.W[j*(ACADO_NY + 1)], i, j);
-    }
-  }
-  for (unsigned j = 0; j < ACADO_NX; j++ ){
-    setXF(&acadoVariables.x0[j], j);
-  }
-  for (unsigned j = 0; j < ACADO_NYN; j++ ){
-    setWN(&acadoVariables.WN[j*(ACADO_NYN + 1)], j);
-    setRN(&acadoVariables.yN[j], j);
-  }
-  test_init();
+void gios_acado::AcadoSolver::linkControl(gios::VariablePtr &var, const unsigned &pos, const unsigned &step){//{{{
+    var = &acadoVariables.u[step*ACADO_NU + pos];
+}//}}}
+
+void gios_acado::AcadoSolver::linkReference(gios::VariablePtr &var, const unsigned &pos, const unsigned &step){//{{{
+    var = &acadoVariables.y[step*ACADO_NY + pos];
+}//}}}
+
+void gios_acado::AcadoSolver::linkDynamicWeight(gios::VariablePtr &var, const unsigned &step, const unsigned &pos){//{{{
+  var = &acadoVariables.W[step*ACADO_NY*ACADO_NY + pos*(ACADO_NY +1)];
+}//}}}
+
+void gios_acado::AcadoSolver::linkWeight(gios::VariablePtr &var, const unsigned &pos){//{{{
+    var = &acadoVariables.W[pos*(ACADO_NY + 1)];
+}//}}}
+
+void gios_acado::AcadoSolver::linkParameter(gios::VariablePtr &var,const unsigned &step, const unsigned &pos){//{{{
+    var = &acadoVariables.od[step*ACADO_NOD + pos];
+}//}}}
+
+void gios_acado::AcadoSolver::linkEndReference(gios::VariablePtr &var, const unsigned &pos){//{{{
+    var = &acadoVariables.yN[pos];
+}//}}}
+
+void gios_acado::AcadoSolver::linkEndWeight(gios::VariablePtr &var, const unsigned &pos){//{{{
+    var = &acadoVariables.WN[pos*(ACADO_NYN + 1)];
+}//}}}
+
+void gios_acado::AcadoSolver::getParameters(gios::Parameters &p){//{{{
+  p.n   = ACADO_N;
+  p.nx  = ACADO_NX;  //Number of differential states 
+  p.nu  = ACADO_NU;  //Number of controls
+  p.np  = ACADO_NOD;  //Number of parameters
+  p.nr  = ACADO_NY;  //Number of references
+  p.nrn = ACADO_NYN; //Number of references at end
 }//}}}
 
 void gios_acado::AcadoSolver::solve(){//{{{

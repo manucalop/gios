@@ -8,12 +8,23 @@
 namespace gios_acado{
 
   class AcadoSolver : public gios::Solver{//{{{
-    private:
-      void init();
     public:
       AcadoSolver();
       ~AcadoSolver();
     public:
+      void linkState(         gios::VariablePtr &var, const unsigned &step, const unsigned &pos) override;
+      void linkControl(       gios::VariablePtr &var, const unsigned &step, const unsigned &pos) override;
+      void linkReference(     gios::VariablePtr &var, const unsigned &step, const unsigned &pos) override;
+      void linkWeight(        gios::VariablePtr &var, const unsigned &pos) override;
+      void linkDynamicWeight( gios::VariablePtr &var, const unsigned &step, const unsigned &pos) override;
+      void linkParameter(     gios::VariablePtr &var, const unsigned &step, const unsigned &pos) override;
+
+      void linkFeedbackState( gios::VariablePtr &var, const unsigned &pos) override;
+      void linkEndReference(  gios::VariablePtr &var, const unsigned &pos) override;
+      void linkEndWeight(     gios::VariablePtr &var, const unsigned &pos) override;
+
+      void getParameters(gios::Parameters &p) override;
+
       void solve() override;
       void simulate() override;
   };//}}}
