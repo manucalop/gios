@@ -5,9 +5,9 @@
 #include "acado_common.h"
 #include "acado_auxiliary_functions.h"
 
-namespace gios_acado{
+namespace gios{
 
-  class AcadoSolver : public gios::Solver{//{{{
+  class AcadoSolver : public Solver{//{{{
     public:
       AcadoSolver();
       ~AcadoSolver();
@@ -15,8 +15,7 @@ namespace gios_acado{
       void linkState(         gios::VariablePtr &var, const unsigned &step, const unsigned &pos) override;
       void linkControl(       gios::VariablePtr &var, const unsigned &step, const unsigned &pos) override;
       void linkReference(     gios::VariablePtr &var, const unsigned &step, const unsigned &pos) override;
-      void linkWeight(        gios::VariablePtr &var, const unsigned &pos) override;
-      void linkDynamicWeight( gios::VariablePtr &var, const unsigned &step, const unsigned &pos) override;
+      void linkWeight(        gios::VariablePtr &var, const unsigned &step, const unsigned &pos) override;
       void linkParameter(     gios::VariablePtr &var, const unsigned &step, const unsigned &pos) override;
 
       void linkFeedbackState( gios::VariablePtr &var, const unsigned &pos) override;
@@ -24,6 +23,7 @@ namespace gios_acado{
       void linkEndWeight(     gios::VariablePtr &var, const unsigned &pos) override;
 
       void getParameters(gios::Parameters &p) override;
+      unsigned getN() override;
 
       void solve() override;
       void simulate() override;
