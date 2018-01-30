@@ -4,7 +4,8 @@
 #include <vector>
 #include <iostream>
 #include <memory>
-
+#include <type_traits>
+#include <utility>
 namespace gios{
 
 // Typedefs {{{
@@ -50,26 +51,34 @@ class Solver{/*{{{*/
 
 /* Index {{{*/
 
-  class Index{/*{{{*/
-    std::vector<VariablePtr*> index;
-    public:
-    explicit Index();
-    virtual ~Index(){};
-    void add(VariablePtr &data_);
-    unsigned size() {return index.size();};
-    VariablePtr& operator[] (unsigned x) {return *index[x];};
-  };/*}}}*/
+template<class T>
+class Index{/*{{{*/
+  std::vector<T*> index;
+  public:
+  explicit Index();
+  virtual ~Index(){};
+  void add(T &data_);
+  unsigned size() {return index.size();};
+  T*& operator[] (unsigned x) {return index[x];};
+};/*}}}*/
 
-  Index::Index(){/*{{{*/
-  }/*}}}*/
+template<class T>
+Index<T>::Index(){/*{{{*/
+}/*}}}*/
 
-  void Index::add(VariablePtr &data_){/*{{{*/
-    index.push_back(&data_); 
-  };/*}}}*/
+template<class T>
+void Index<T>::add(T &data_){/*{{{*/
+  index.push_back(&data_); 
+};/*}}}*/
 
 /*}}}*/
 
 /* Templated Classes {{{*/
+//TODO: Generate only if class is derived from Index
+//is_base_of<Index, Derived>
+//template<typename T>
+//typename enable_if<is_base_of<Index, T>, ostream&>::type
+//typename std::enable_if_c<std::is_base_of<class Index, T>::value_type, T>
 
 /* State {{{*/
     
@@ -77,13 +86,16 @@ class Solver{/*{{{*/
   class State{/*{{{*/
 		Solver * const solver;
     //public://Provisional
-    T state;
+    //T state;
+    //state Points to solver values (double)
+    //T[] points to data values (double)
+    std::vector<VariablePtr> state;
     public:
     explicit State(Solver * const solver_);
     ~State();
     public:
     T const& get() const;
-    void set(T const& state_);
+    void set(T& state_);
     public:
     void linkState(        const unsigned step, unsigned &pos);
     void linkReference(    const unsigned step, unsigned &pos);
@@ -97,7 +109,11 @@ class Solver{/*{{{*/
 
   template<class T>
   State<T>::State( Solver * const solver_):/*{{{*/
-    solver(solver_){
+    solver(solver_),
+    state(T().size())
+  {
+      //T data;
+      //state = std::vector<VariablePtr>(data.size());
   }/*}}}*/
 
   template<class T>
@@ -106,13 +122,17 @@ class Solver{/*{{{*/
 
   template<class T>
   T const& State<T>::get() const{/*{{{*/
-    return state;
+      T data;
+      for(unsigned i = 0; i < data.size(); i++){
+        *data[i] = *state[i];
+      }
+    return data;
   }/*}}}*/
 
   template<class T>
-  void State<T>::set(T const& state_){/*{{{*/
+  void State<T>::set(T& state_){/*{{{*/
     for(unsigned i = 0; i < state.size(); i++){
-      *state[i] = *state_[i];
+      *state[i] = *(state_[i]);
     }
   }/*}}}*/
 
@@ -172,7 +192,7 @@ class Solver{/*{{{*/
   template<class T>
   class Control{/*{{{*/
 		Solver * const solver;
-    T control;
+    std::vector<VariablePtr> control;
     public:
     explicit Control( Solver * const solver_);
     T const& get() const;
@@ -191,7 +211,11 @@ class Solver{/*{{{*/
     
   template<class T>
   T const& Control<T>::get() const{/*{{{*/
-    return control;
+      T data;
+      for(unsigned i = 0; i < data.size(); i++){
+        *data[i] = *control[i];
+      }
+    return data;
   };/*}}}*/
 
   template<class T>
@@ -236,7 +260,7 @@ class Solver{/*{{{*/
   template<class T>
   class Parameter{/*{{{*/
 		Solver * const solver;
-    T parameter;
+    std::vector<VariablePtr> parameter;
     public:
     explicit Parameter( Solver * const solver_);
     T const& get() const;
@@ -252,7 +276,11 @@ class Solver{/*{{{*/
     
   template<class T>
   T const& Parameter<T>::get() const{/*{{{*/
-    return parameter;
+      T data;
+      for(unsigned i = 0; i < data.size(); i++){
+        *data[i] = *parameter[i];
+      }
+    return data;
   };/*}}}*/
 
   template<class T>
@@ -487,7 +515,6 @@ class Solver{/*{{{*/
 /*}}}*/
 
 /*}}}*/
-
 
 }
 
