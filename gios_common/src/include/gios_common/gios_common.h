@@ -49,31 +49,6 @@ class Solver{/*{{{*/
     virtual void simulate()=0;
 };/*}}}*/
 
-/* Index {{{*/
-
-template<class T>
-class Index{/*{{{*/
-  private:
-    std::vector<T*> index;
-  public:
-    explicit Index();
-    virtual ~Index(){};
-    void add(T &data_);
-    unsigned size() {return index.size();};
-    T*& operator[] (unsigned x) {return index[x];};
-};/*}}}*/
-
-template<class T>
-Index<T>::Index(){/*{{{*/
-}/*}}}*/
-
-template<class T>
-void Index<T>::add(T &data_){/*{{{*/
-  index.push_back(&data_); 
-};/*}}}*/
-
-/*}}}*/
-
 /* Templated Classes {{{*/
 
 //TODO: Parametrize getters and setters based on structs
