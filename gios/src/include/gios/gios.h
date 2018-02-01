@@ -6,6 +6,7 @@
 #include <memory>
 #include <type_traits>
 #include <utility>
+
 namespace gios{
 
 // Typedefs {{{
@@ -30,8 +31,7 @@ unsigned nrn; //Number of references at end
 
 class Solver{/*{{{*/
   public:
-    explicit Solver();
-    virtual ~Solver();
+    virtual ~Solver(){};
     virtual void linkState(         VariablePtr &var, const unsigned &step, const unsigned &pos) = 0;
     virtual void linkControl(       VariablePtr &var, const unsigned &step, const unsigned &pos) = 0;
     virtual void linkReference(     VariablePtr &var, const unsigned &step, const unsigned &pos) = 0;
@@ -51,7 +51,7 @@ class Solver{/*{{{*/
 
 /* Templated Classes {{{*/
 
-//TODO: Parametrize getters and setters based on structs
+//TODO: Parametrize getters and setters based on structs{{{
 //        gios::State<StructType>(solver)
 //      Parameters given by the user (in order)
 //        Struct.x
@@ -75,7 +75,7 @@ class Solver{/*{{{*/
 //        
 //      Until then, the user has to inherit the 
 //      classes and implement the getters and setters.
-//      
+//      }}}
 
 /* State {{{*/
 template<class T>    
@@ -297,7 +297,7 @@ class StateArray{/*{{{*/
   std::vector<State<T>> var;
   public:
   explicit StateArray(Solver * const solver_);
-  std::vector<T> const& get() const;
+  std::vector<T> get() const;
   void set(std::vector<T> const& var_);
   void set(T const& var_);
   void linkState(unsigned &pos);
@@ -313,8 +313,8 @@ StateArray<T>::StateArray(Solver * const solver_):/*{{{*/
 }/*}}}*/
 
 template<class T>
-std::vector<T> const& StateArray<T>::get() const{ /*{{{*/
-  std::vector<T> a(var.size);
+std::vector<T> StateArray<T>::get() const{ /*{{{*/
+  std::vector<T> a(var.size());
   for(unsigned i=0; i < var.size(); i++){
     a[i] = var[i].get();
   };
@@ -383,7 +383,7 @@ class ControlArray{/*{{{*/
   std::vector<Control<T>> var;
   public:
   ControlArray(Solver * const solver_);
-  std::vector<T> const& get() const;
+  std::vector<T> get() const;
   void set(std::vector<T> const& var_);
   void set(T const& var_);
   void linkControl(unsigned &pos);
@@ -399,8 +399,8 @@ ControlArray<T>::ControlArray(Solver * const solver_):/*{{{*/
 }/*}}}*/
 
 template<class T>
-std::vector<T> const& ControlArray<T>::get() const{ /*{{{*/
-  std::vector<T> a(var.size);
+std::vector<T> ControlArray<T>::get() const{ /*{{{*/
+  std::vector<T> a(var.size());
   for(unsigned i=0; i < var.size(); i++){
     a[i] = var[i].get();
   }
@@ -408,16 +408,16 @@ std::vector<T> const& ControlArray<T>::get() const{ /*{{{*/
 }/*}}}*/
 
 template<class T>
-void ControlArray<T>::set(std::vector<T> const&var_){/*{{{*/
+void ControlArray<T>::set(std::vector<T> const& var_){/*{{{*/
   for(unsigned i=0; i<var.size(); i++){
     var[i].set(var_[i]);
   }
 }/*}}}*/
 
 template<class T>
-void ControlArray<T>::set(T const&var_){/*{{{*/
-  for(unsigned i=0; i<var.size(); i++){
-    var[i].set(var);
+void ControlArray<T>::set(T const& var_){/*{{{*/
+  for(unsigned i=0; i < var.size(); i++){
+    var[i].set(var_);
   }
 }/*}}}*/
 
@@ -458,7 +458,7 @@ class ParameterArray{/*{{{*/
   std::vector<Parameter<T>> var;
   public:
   ParameterArray(Solver * const solver_);
-  std::vector<T> const& get() const;
+  std::vector<T> get() const;
   void set(std::vector<T> const& var_);
   void set(T const& var_);
   void linkParameter(unsigned &pos);
@@ -470,8 +470,8 @@ ParameterArray<T>::ParameterArray(Solver * const solver_):/*{{{*/
 }/*}}}*/
 
 template<class T>
-std::vector<T> const& ParameterArray<T>::get() const{ /*{{{*/
-  std::vector<T> a(var.size);
+std::vector<T> ParameterArray<T>::get() const{ /*{{{*/
+  std::vector<T> a(var.size());
   for(unsigned i=0; i < var.size(); i++){
     a[i] = var[i].get();
   }
