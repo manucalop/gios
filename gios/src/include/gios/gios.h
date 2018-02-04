@@ -1,5 +1,5 @@
-#ifndef GIOS_COMMON_H_
-#define GIOS_COMMON_H_
+#ifndef GIOS_H_
+#define GIOS_H_
 
 #include <vector>
 #include <iostream>
@@ -52,6 +52,8 @@ class Solver{/*{{{*/
 /* Templated Classes {{{*/
 
 //TODO: Parametrize getters and setters based on structs{{{
+//      ++ Make templated static functions allocate, set and get and
+//         include in State, Control and Parameter
 //        gios::State<StructType>(solver)
 //      Parameters given by the user (in order)
 //        Struct.x
@@ -84,7 +86,6 @@ class State{/*{{{*/
     std::vector<VariablePtr> state;
   public:
     explicit State(Solver * const solver_);
-    ~State();
     T get() const;
     void set(T const& state_);
     void linkState(        const unsigned step, unsigned &pos);
@@ -97,17 +98,11 @@ class State{/*{{{*/
     void linkEndWeight(    unsigned &pos);
 };/*}}}*/
 
-template<class T>    
-State<T>::State( Solver * const solver_):/*{{{*/
-  solver(solver_)
-{
-    //T data;
-    //state = std::vector<VariablePtr>(data.size());
-}/*}}}*/
-
-template<class T>    
-State<T>::~State(){/*{{{*/
-}/*}}}*/
+//template<class T>    
+//State<T>::State( Solver * const solver_):/*{{{*/
+//  solver(solver_)
+//{
+//}/*}}}*/
 //  
 //template<class T>
 //T const& State<T>::get() const{/*{{{*/
@@ -191,12 +186,13 @@ class Control{/*{{{*/
   void linkReference( const unsigned step, unsigned &pos);
   void linkWeight(    const unsigned step, unsigned &pos);
   void linkParameter( const unsigned step, unsigned &pos);
-};/*}}}*/
 
-template<class T>
-Control<T>::Control( Solver * const solver_):/*{{{*/
-  solver(solver_){
-}/*}}}*/
+};/*}}}*/
+//
+//template<class T>
+//Control<T>::Control( Solver * const solver_):/*{{{*/
+//  solver(solver_){
+//}/*}}}*/
 //  
 //template<class T>
 //T const& Control<T>::get() const{/*{{{*/
@@ -257,11 +253,11 @@ class Parameter{/*{{{*/
   public:
   void linkParameter(   const unsigned step, unsigned &pos);
 };/*}}}*/
-
-template<class T>
-Parameter<T>::Parameter( Solver * const solver_):/*{{{*/
-  solver(solver_){
-}/*}}}*/
+//
+//template<class T>
+//Parameter<T>::Parameter( Solver * const solver_):/*{{{*/
+//  solver(solver_){
+//}/*}}}*/
 //  
 //template<class T>
 //T const& Parameter<T>::get() const{/*{{{*/
