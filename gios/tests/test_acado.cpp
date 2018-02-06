@@ -1,6 +1,7 @@
 #include "gios/acado.h"
 #include "gios/gios.h"
 #include <gtest/gtest.h>
+#include <vector>
 
 ///* Test Problem Definition {{{*/
 
@@ -37,7 +38,6 @@ template<> TestStruct do_get<TestStruct>(std::vector<VariablePtr> const& vec_){/
   var_.r = *vec_[pos++];
   return var_;
 }/*}}}*/
-
 
 template<> Variable<TestStruct>::Variable( Solver * const solver_):/*{{{*/
   solver(solver_)
@@ -346,6 +346,12 @@ TEST(Parameter, linkParameter){/*{{{*/
 
 /* Variable Tests{{{*/
 
+TEST(Variable, construct){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::Variable<TestStruct> state (solver.get());
+  EXPECT_EQ(state.size(), 4); 
+}//}}}
+
 TEST(Variable, linkState){/*{{{*/
   std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
   gios::Variable<TestStruct> state (solver.get());
@@ -481,6 +487,47 @@ TEST(Variable, linkEndWeight){/*{{{*/
   for(pos = base_pos; pos < state.size(); pos++){//Var
     solver->linkEndWeight(x, pos);
     EXPECT_EQ(state[pos], x); 
+  }
+}//}}}
+
+TEST(Variable, set){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::Variable<TestStruct> state (solver.get());
+  TestStruct foo {1, 2, 3, 4};
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos;
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    pos = base_pos;
+    state.linkState(step, pos);
+    state.set(foo);
+    for(pos = base_pos; pos < state.size(); pos++){//Var
+      solver->linkState(x, step, pos);
+      EXPECT_EQ(*state[pos], *x); 
+    }
+  }
+}//}}}
+
+TEST(Variable, get){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::Variable<TestStruct> state (solver.get());
+  TestStruct foot{0}, foo {1, 2, 3, 4};
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos;
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    pos = base_pos;
+    state.linkState(step, pos);
+    state.set(foo);
+    foot = state.get();
+    EXPECT_EQ(foo.x, foot.x); 
+    EXPECT_EQ(foo.y, foot.y); 
+    EXPECT_EQ(foo.z, foot.z); 
+    EXPECT_EQ(foo.r, foot.r); 
   }
 }//}}}
 
@@ -816,6 +863,82 @@ TEST(VariableArray, linkParameter){/*{{{*/
     for(pos = base_pos; pos < parameter.size(); pos++){//Var
       EXPECT_EQ(parameters[step][pos],parameter[pos]);
     }
+  }
+}//}}}
+
+TEST(VariableArray, set){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::VariableArray<TestStruct> states (solver.get(), solver->getN() + 1);
+  gios::Variable<TestStruct> state (solver.get());
+  TestStruct foo {1, 2, 3, 4};
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos = 0;
+  states.linkState(pos);
+  states.set(foo);
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    EXPECT_EQ(states[step].get().x, foo.x); 
+    EXPECT_EQ(states[step].get().y, foo.y); 
+    EXPECT_EQ(states[step].get().z, foo.z); 
+    EXPECT_EQ(states[step].get().r, foo.r); 
+  }
+}//}}}
+
+TEST(VariableArray, setArray){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::VariableArray<TestStruct> states (solver.get(), solver->getN() + 1);
+  gios::Variable<TestStruct> state (solver.get());
+  TestStruct foo {1, 2, 3, 4};
+  std::vector<TestStruct> foo_array(solver->getN() +1);
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos = 0;
+  states.linkState(pos);
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    foo_array[step].x = foo.x + step;
+    foo_array[step].y = foo.y + step;
+    foo_array[step].z = foo.z + step;
+    foo_array[step].r = foo.r + step;
+  }
+  states.set(foo_array);
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    EXPECT_EQ(states[step].get().x, foo_array[step].x); 
+    EXPECT_EQ(states[step].get().y, foo_array[step].y); 
+    EXPECT_EQ(states[step].get().z, foo_array[step].z); 
+    EXPECT_EQ(states[step].get().r, foo_array[step].r); 
+  }
+}//}}}
+
+TEST(VariableArray, get){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::VariableArray<TestStruct> states (solver.get(), solver->getN() + 1);
+  gios::Variable<TestStruct> state (solver.get());
+  std::vector<TestStruct> foo_array(solver->getN() +1);
+  TestStruct foot{0}, foo {1, 2, 3, 4};
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos = 0;
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    foo_array[step].x = foo.x + step;
+    foo_array[step].y = foo.y + step;
+    foo_array[step].z = foo.z + step;
+    foo_array[step].r = foo.r + step;
+  }
+  states.linkState(pos);
+  states.set(foo_array);
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    pos = base_pos;
+    state.linkState(step, pos);
+    EXPECT_EQ(states.get()[step].x, state.get().x); 
+    EXPECT_EQ(states.get()[step].y, state.get().y); 
+    EXPECT_EQ(states.get()[step].z, state.get().z); 
+    EXPECT_EQ(states.get()[step].r, state.get().r); 
   }
 }//}}}
 
