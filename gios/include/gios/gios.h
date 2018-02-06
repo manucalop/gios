@@ -89,6 +89,103 @@ template<class T> void allocate(std::vector<VariablePtr> & vec_);
 //};
 //      }}}
 
+/* Variable {{{*/
+
+template<class T>    
+class Variable{/*{{{*/
+    Solver * const solver;
+    std::vector<VariablePtr> var;
+  public:
+    explicit Variable(Solver * const solver_);
+    T get() const;
+    void set(T const& var_);
+    VariablePtr& operator[] (unsigned x) { return var[x]; };
+    unsigned size() const                { return var.size(); };
+    void linkState(        const unsigned step, unsigned &pos);
+    void linkControl(      const unsigned step, unsigned &pos);
+    void linkReference(    const unsigned step, unsigned &pos);
+    void linkWeight(       const unsigned step, unsigned &pos);
+    void linkParameter(    const unsigned step, unsigned &pos);
+
+    void linkFeedback(     unsigned &pos);
+    void linkEndReference( unsigned &pos);
+    void linkEndWeight(    unsigned &pos);
+};/*}}}*/
+//
+//template<class T>    
+//Variable<T>::Variable( Solver * const solver_):/*{{{*/
+//  solver(solver_)
+//{
+//  allocate<T>(var);
+//}/*}}}*/
+//  
+//template<class T>
+//T Variable<T>::get() const{/*{{{*/
+//  return do_get<T>(var);
+//};/*}}}*/
+//
+//template<class T>
+//void Variable<T>::set(T const& var_){/*{{{*/
+//  do_set<T>(var_, var);
+//}/*}}}*/
+//
+template<class T>    
+void Variable<T>::linkState(const unsigned step, unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkState(var[i], step, pos++);
+  }
+}/*}}}*/
+
+template<class T>
+void Variable<T>::linkControl(const unsigned step, unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkControl(var[i], step, pos++);
+  }
+}/*}}}*/
+
+template<class T>    
+void Variable<T>::linkReference(const unsigned step, unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkReference(var[i], step, pos++);
+  }
+}/*}}}*/
+
+template<class T>    
+void Variable<T>::linkWeight(const unsigned step, unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkWeight(var[i], step, pos++);
+  }
+}/*}}}*/
+
+template<class T>    
+void Variable<T>::linkFeedback(unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkFeedbackState(var[i], pos++);
+  }
+}/*}}}*/
+
+template<class T>    
+void Variable<T>::linkEndReference(unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkEndReference(var[i], pos++);
+  }
+}/*}}}*/
+
+template<class T>    
+void Variable<T>::linkEndWeight(unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkEndWeight(var[i], pos++);
+  }
+}/*}}}*/
+
+template<class T>
+void Variable<T>::linkParameter(const unsigned step, unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkParameter(var[i], step, pos++);
+  }
+}/*}}}*/
+
+/*}}}*/
 
 /* State {{{*/
 template<class T>    
@@ -479,132 +576,38 @@ void ParameterArray<T>::linkParameter(unsigned &pos){/*{{{*/
 
 /*}}}*/
 
-/*}}}*/
-
-/* Generic Templated Variables {{{*/
-
-/* Variable {{{*/
-
-template<class T>    
-class Variable{/*{{{*/
-    Solver * const solver;
-    std::vector<VariablePtr> var;
-  public:
-    explicit Variable(Solver * const solver_);
-    T get() const;
-    void set(T const& var_);
-    VariablePtr& operator[] (unsigned x) { return var[x]; };
-    unsigned size() const{ return var.size(); };
-    void linkState(        const unsigned step, unsigned &pos);
-    void linkControl(      const unsigned step, unsigned &pos);
-    void linkReference(    const unsigned step, unsigned &pos);
-    void linkWeight(       const unsigned step, unsigned &pos);
-    void linkParameter(    const unsigned step, unsigned &pos);
-
-    void linkFeedback(     unsigned &pos);
-    void linkEndReference( unsigned &pos);
-    void linkEndWeight(    unsigned &pos);
-};/*}}}*/
-
-template<class T>    
-Variable<T>::Variable( Solver * const solver_):/*{{{*/
-  solver(solver_)
-{
-  allocate<T>(var);
-}/*}}}*/
-  
-template<class T>
-T Variable<T>::get() const{/*{{{*/
-  return do_get<T>(var);
-};/*}}}*/
-
-template<class T>
-void Variable<T>::set(T const& var_){/*{{{*/
-  do_set<T>(var_, var);
-}/*}}}*/
-
-template<class T>    
-void Variable<T>::linkState(const unsigned step, unsigned &pos){/*{{{*/
-  for(unsigned i = 0; i < var.size(); i++){
-    solver->linkState(var[i], step, pos++);
-  }
-}/*}}}*/
-
-template<class T>
-void Variable<T>::linkControl(const unsigned step, unsigned &pos){/*{{{*/
-  for(unsigned i = 0; i < var.size(); i++){
-    solver->linkControl(var[i], step, pos++);
-  }
-}/*}}}*/
-
-template<class T>    
-void Variable<T>::linkReference(const unsigned step, unsigned &pos){/*{{{*/
-  for(unsigned i = 0; i < var.size(); i++){
-    solver->linkReference(var[i], step, pos++);
-  }
-}/*}}}*/
-
-template<class T>    
-void Variable<T>::linkWeight(const unsigned step, unsigned &pos){/*{{{*/
-  for(unsigned i = 0; i < var.size(); i++){
-    solver->linkWeight(var[i], step, pos++);
-  }
-}/*}}}*/
-
-template<class T>    
-void Variable<T>::linkFeedback(unsigned &pos){/*{{{*/
-  for(unsigned i = 0; i < var.size(); i++){
-    solver->linkFeedbackState(var[i], pos++);
-  }
-}/*}}}*/
-
-template<class T>    
-void Variable<T>::linkEndReference(unsigned &pos){/*{{{*/
-  for(unsigned i = 0; i < var.size(); i++){
-    solver->linkEndReference(var[i], pos++);
-  }
-}/*}}}*/
-
-template<class T>    
-void Variable<T>::linkEndWeight(unsigned &pos){/*{{{*/
-  for(unsigned i = 0; i < var.size(); i++){
-    solver->linkEndWeight(var[i], pos++);
-  }
-}/*}}}*/
-
-template<class T>
-void Variable<T>::linkParameter(const unsigned step, unsigned &pos){/*{{{*/
-  for(unsigned i = 0; i < var.size(); i++){
-    solver->linkParameter(var[i], step, pos++);
-  }
-}/*}}}*/
-
-/*}}}*/
-
 /* VariableArray {{{*/
 
 template<class T>
 class VariableArray{/*{{{*/
-  public://Provisional
+  Solver * const solver;
   std::vector<Variable<T>> var;
   public:
     explicit VariableArray(Solver * const solver_, unsigned n);
+    Variable<T>& operator[] (unsigned x) { return var[x]; };
+    Variable<T>& back()                  { return var.back(); };
+    unsigned size() const                { return var.size(); };
     std::vector<T> get() const;
     void set(std::vector<T> const& var_);
     void set(T const& var_);
-    Variable<T>& operator[] (unsigned x) { return var[x]; };
-    unsigned size() const{ return var.size(); };
     void linkState(unsigned &pos);
     void linkControl(unsigned &pos);
     void linkReference(unsigned &pos);
     void linkWeight(unsigned &pos);
     void linkParameter(unsigned &pos);
+    bool checkVector(unsigned n);
 };/*}}}*/
 
 template<class T>
 VariableArray<T>::VariableArray(Solver * const solver_, unsigned n):/*{{{*/
+  solver(solver_),
   var(n, Variable<T>(solver_))
 {
+}/*}}}*/
+
+template<class T>
+bool VariableArray<T>::checkVector(unsigned n){/*{{{*/
+  return var.size() == n;
 }/*}}}*/
 
 template<class T>
@@ -632,8 +635,12 @@ void VariableArray<T>::set(T const& var_){/*{{{*/
 
 template<class T>
 void VariableArray<T>::linkState(unsigned &pos){/*{{{*/
+  if (!checkVector(solver->getN() +1)){
+    std::cout<<"linkState: Error in vector dimension"<<std::endl;
+    exit(1);
+  }
   unsigned initial_pos = pos;
-  for(unsigned step=0; step < var.size(); step++){
+  for(unsigned step=0; step < solver->getN() + 1; step++){
     pos = initial_pos;
     var[step].linkState(step, pos);
   }
@@ -641,30 +648,52 @@ void VariableArray<T>::linkState(unsigned &pos){/*{{{*/
 
 template<class T>
 void VariableArray<T>::linkReference(unsigned &pos){/*{{{*/
+  if (!checkVector(solver->getN() +1) && !checkVector(solver->getN())){
+    std::cout<<"linkReference: Error in vector dimension"<<std::endl;
+    exit(1);
+  }
   unsigned initial_pos = pos;
-  for(unsigned step=0; step < var.size() - 1; step++){
+  for(unsigned step=0; step < solver->getN(); step++){
     pos = initial_pos;
     var[step].linkReference(step, pos);
   }
-  pos = initial_pos;
-  var.back().linkEndReference(pos);
+  if( !checkVector(solver->getN()) ){//The user wants to include EndReference in the same array
+    pos = initial_pos;
+    var.back().linkEndReference(pos);
+  }
 }/*}}}*/
 
 template<class T>
 void VariableArray<T>::linkWeight(unsigned &pos){/*{{{*/
+  if (!checkVector(solver->getN() +1) && !checkVector(solver->getN()) && !checkVector(2)){
+    std::cout<<"linkWeight: Error in vector dimension"<<std::endl;
+    exit(1);
+  }
   unsigned initial_pos = pos;
-  for(unsigned step=0; step < var.size() - 1; step++){
+  unsigned step;
+  for(step=0; step < var.size() - 1; step++){
     pos = initial_pos;
     var[step].linkWeight(step, pos);
   }
-  pos = initial_pos;
-  var.back().linkEndWeight(pos);
+  if( checkVector(solver->getN()) ){
+    pos = initial_pos;
+    var.back().linkWeight(step, pos);
+  }
+  else{//The user wants to include EndWeights in the same array
+    pos = initial_pos;
+    var.back().linkEndWeight(pos);
+  }
+
 }/*}}}*/
 
 template<class T>
 void VariableArray<T>::linkControl(unsigned &pos){/*{{{*/
+  if (!checkVector(solver->getN())){
+    std::cout<<"linkControl: Error in vector dimension"<<std::endl;
+    exit(1);
+  }
   unsigned initial_pos = pos;
-  for(unsigned step=0; step<var.size(); step++){
+  for(unsigned step=0; step < solver->getN(); step++){
     pos = initial_pos;
     var[step].linkControl(step, pos);
   }
@@ -672,8 +701,12 @@ void VariableArray<T>::linkControl(unsigned &pos){/*{{{*/
 
 template<class T>
 void VariableArray<T>::linkParameter(unsigned &pos){/*{{{*/
+  if (!checkVector(solver->getN() + 1)){
+    std::cout<<"linkParameter: Error in vector dimension"<<std::endl;
+    exit(1);
+  }
   unsigned initial_pos = pos;
-  for(unsigned step=0; step<var.size(); step++){
+  for(unsigned step=0; step < solver->getN() + 1; step++){
     pos = initial_pos;
     var[step].linkParameter(step, pos);
   }
