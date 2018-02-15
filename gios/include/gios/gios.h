@@ -42,6 +42,7 @@ class Solver{/*{{{*/
 
     virtual void solve()=0;
     virtual void simulate()=0;
+    virtual void reset()=0;
 };/*}}}*/
 
 template<class T> T do_get(std::vector<VariablePtr> const& vec_);

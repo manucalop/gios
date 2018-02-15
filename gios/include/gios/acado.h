@@ -32,6 +32,7 @@ namespace gios{
 
       void solve() override;
       void simulate() override;
+      void reset() override;
   };//}}}
 
 AcadoSolver::AcadoSolver(){//{{{
@@ -112,6 +113,15 @@ void AcadoSolver::solve(){//{{{
 
 void AcadoSolver::simulate(){//{{{
   acado_preparationStep();
+};//}}}
+
+void AcadoSolver::reset(){//{{{
+ acado_initializeSolver();
+ for (unsigned i = 0; i < ACADO_NX * (ACADO_N + 1); ++i)  acadoVariables.x[ i ] = 0.0;
+ // Initialize Controls
+ for (unsigned i = 0; i < ACADO_NU * ACADO_N; ++i)  acadoVariables.u[ i ] = 0.0;
+
+ acado_initializeNodesByForwardSimulation();
 };//}}}
 
 }

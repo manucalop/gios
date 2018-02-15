@@ -1,18 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(gios)
 add_compile_options(-std=c++11)
-find_package(catkin REQUIRED)
 
 set(ACADO_ROOT_DIR tests/solvers/acado )
-set(GIOS_INCLUDE_DIRS
-     ${catkin_INCLUDE_DIRS}
-     include/
-     ${ACADO_ROOT_DIR}
-     ${ACADO_ROOT_DIR}/qpoases/
-     ${ACADO_ROOT_DIR}/qpoases/INCLUDE
-     ${ACADO_ROOT_DIR}/qpoases/SRC
-     )
-
 set(ACADO_SOURCES
   ${ACADO_ROOT_DIR}/qpoases/SRC/Bounds.cpp
   ${ACADO_ROOT_DIR}/qpoases/SRC/Bounds.ipp
@@ -39,24 +29,26 @@ set(ACADO_SOURCES
   ${ACADO_ROOT_DIR}/acado_solver.c
   )
 
+set(${PROJECT_NAME}_INCLUDE_DIRS
+     ${catkin_INCLUDE_DIRS}
+     include/
+   )
+
+find_package(catkin REQUIRED)
+
+# Exported Include dirs (I think)
 catkin_package(
-  INCLUDE_DIRS ${GIOS_INCLUDE_DIRS} 
+  INCLUDE_DIRS ${${PROJECT_NAME}_INCLUDE_DIRS}
 )
 
-include_directories(
-  ${GIOS_INCLUDE_DIRS}
-)
-add_library(${PROJECT_NAME}_lib
-  src/gios.cpp
-)
+include_directories( ${${PROJECT_NAME}_INCLUDE_DIRS} )
 
+# Library
+add_library(${PROJECT_NAME}_lib src/${PROJECT_NAME}.cpp)
 add_dependencies(${PROJECT_NAME}_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
 target_link_libraries(${PROJECT_NAME}_lib ${catkin_LIBRARIES})
 
 # Tests 
-
-
 if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(test_acado ${ACADO_SOURCES} tests/test_acado.cpp)
   target_link_libraries(test_acado ${PROJECT_NAME}_lib ${catkin_LIBRARIES})
