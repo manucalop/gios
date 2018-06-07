@@ -680,7 +680,7 @@ void VariableArray<T>::linkWeight(unsigned &pos){/*{{{*/
     pos = initial_pos;
     var.back().linkWeight(step, pos);
   }
-  else{//The user wants to include EndWeights in the same array
+  else{//The user wants to include EndWeights in the same array (2 steps for fixed weights)
     pos = initial_pos;
     var.back().linkEndWeight(pos);
   }
