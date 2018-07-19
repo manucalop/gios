@@ -189,20 +189,22 @@ void Variable<T>::linkParameter(const unsigned step, unsigned &pos){/*{{{*/
 }/*}}}*/
 
 // Implementation for double
-template<> Variable<double>::Variable(Solver * const solver_):/*{{{*/
-  solver(solver_)
-{
-  double var_;
-  var.push_back(&var_);
-}/*}}}*/
-
-template<> void Variable<double>::set(double const& var_){/*{{{*/
-  *var[0] = var_;
-}/*}}}*/
-
-template<> double Variable<double>::get() const{/*{{{*/
-  return *var[0];
-}/*}}}*/
+//
+//template<> Variable<double>::Variable(Solver * const solver_):/*{{{*/
+//  solver(solver_)
+//{
+//  double var_;
+//  var.push_back(&var_);
+//}/*}}}*/
+//
+//template<> void Variable<double>::set(double const& var_){/*{{{*/
+//  *var[0] = var_;
+//}/*}}}*/
+//
+//template<> double Variable<double>::get() const{/*{{{*/
+//  return *var[0];
+//}/*}}}*/
+//
 /*}}}*/
 
 /* State {{{*/
