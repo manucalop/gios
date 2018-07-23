@@ -2,7 +2,14 @@ cmake_minimum_required(VERSION 2.8.3)
 project(gios)
 add_compile_options(-std=c++11)
 
-set(ACADO_ROOT_DIR tests/solvers/acado )
+set(ACADO_ROOT_DIR tests/solvers/drone_mpc_full_generated)
+
+set(ACADO_INCLUDE_DIRS
+     ${ACADO_ROOT_DIR}/
+     ${ACADO_ROOT_DIR}/qpoases/
+     ${ACADO_ROOT_DIR}/qpoases/INCLUDE
+     ${ACADO_ROOT_DIR}/qpoases/SRC
+     )
 set(ACADO_SOURCES
   ${ACADO_ROOT_DIR}/qpoases/SRC/Bounds.cpp
   ${ACADO_ROOT_DIR}/qpoases/SRC/Bounds.ipp
@@ -31,6 +38,7 @@ set(ACADO_SOURCES
 
 set(${PROJECT_NAME}_INCLUDE_DIRS
      ${catkin_INCLUDE_DIRS}
+     #     ${ACADO_INCLUDE_DIRS}
      include/
    )
 
