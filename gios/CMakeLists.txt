@@ -38,7 +38,6 @@ set(ACADO_SOURCES
 
 set(${PROJECT_NAME}_INCLUDE_DIRS
      ${catkin_INCLUDE_DIRS}
-     #     ${ACADO_INCLUDE_DIRS}
      include/
    )
 
@@ -58,6 +57,7 @@ target_link_libraries(${PROJECT_NAME}_lib ${catkin_LIBRARIES})
 
 # Tests 
 if (CATKIN_ENABLE_TESTING)
+  include_directories( ${ACADO_INCLUDE_DIRS} )
   catkin_add_gtest(test_acado ${ACADO_SOURCES} tests/test_acado.cpp)
   target_link_libraries(test_acado ${PROJECT_NAME}_lib ${catkin_LIBRARIES})
 endif()

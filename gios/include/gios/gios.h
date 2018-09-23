@@ -45,6 +45,28 @@ class Solver{/*{{{*/
     virtual void reset()=0;
 };/*}}}*/
 
+template<typename U = double>
+class SolverT{/*{{{*/
+  public:
+    virtual ~SolverT(){};
+    virtual void linkState(         U* &var, const unsigned &step, const unsigned &pos) = 0;
+    virtual void linkControl(       U* &var, const unsigned &step, const unsigned &pos) = 0;
+    virtual void linkReference(     U* &var, const unsigned &step, const unsigned &pos) = 0;
+    virtual void linkWeight(        U* &var, const unsigned &step, const unsigned &pos) = 0;
+    virtual void linkParameter(     U* &var, const unsigned &step, const unsigned &pos) = 0;
+
+    virtual void linkFeedbackState( U* &var, const unsigned &pos) = 0;
+    virtual void linkEndReference(  U* &var, const unsigned &pos) = 0;
+    virtual void linkEndWeight(     U* &var, const unsigned &pos) = 0;
+
+    virtual void getParameters(Parameters &p) = 0;
+    virtual unsigned getN() = 0;
+
+    virtual void solve()=0;
+    virtual void simulate()=0;
+    virtual void reset()=0;
+};/*}}}*/
+
 template<class T> T do_get(std::vector<VariablePtr> const& vec_);
 template<class T> void do_set(T const& var_, std::vector<VariablePtr> const& vec_);
 template<class T> void allocate(std::vector<VariablePtr> & vec_);
@@ -191,10 +213,9 @@ void Variable<T>::linkParameter(const unsigned step, unsigned &pos){/*{{{*/
 // Implementation for double
 
 template<> Variable<double>::Variable(Solver * const solver_):/*{{{*/
-  solver(solver_)
+  solver(solver_),
+  var(1)
 {
-  double var_;
-  var.push_back(&var_);
 }/*}}}*/
 
 template<> void Variable<double>::set(double const& var_){/*{{{*/
@@ -736,7 +757,253 @@ void VariableArray<T>::linkParameter(unsigned &pos){/*{{{*/
 
 /*}}}*/
 
-}
+/* Variadic Templates {{{*/
 
+/* Struct {{{*/
+template <typename T, typename U, U T::* ... Ms>
+class Struct{ /*{{{*/
+   Solver * const solver;
+   std::vector<U *> var;
+  public:
+    explicit Struct(Solver * const solver_);
+    void set(T const& var_);
+    T get() const;
+    U* & operator[] (unsigned x) { return var[x]; };
+    unsigned size() const        { return var.size(); };
+    void linkState(        const unsigned step, unsigned &pos);
+    void linkControl(      const unsigned step, unsigned &pos);
+    void linkReference(    const unsigned step, unsigned &pos);
+    void linkWeight(       const unsigned step, unsigned &pos);
+    void linkParameter(    const unsigned step, unsigned &pos);
+
+    void linkFeedback(     unsigned &pos);
+    void linkEndReference( unsigned &pos);
+    void linkEndWeight(    unsigned &pos);
+};/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+Struct<T, U, Ms ... >::Struct(Solver * const solver_):/*{{{*/
+  solver(solver_),
+  var(sizeof...(Ms))
+{
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+void Struct<T, U, Ms ...>::set(T const& var_){/*{{{*/
+  unsigned i = 0;
+  for ( auto&& d : {Ms ...} ){
+    *var[i++] = var_.*d;
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+T Struct<T, U, Ms ...>::get() const{/*{{{*/
+  T var_;
+  unsigned i = 0;
+  for ( auto&& d : {Ms ...} ){
+    var_.*d = *var[i++];
+  }
+  return var_;
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>    
+void Struct<T, U, Ms ...>::linkState(const unsigned step, unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkState(var[i], step, pos++);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+void Struct<T, U, Ms ...>::linkControl(const unsigned step, unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkControl(var[i], step, pos++);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>    
+void Struct<T, U, Ms ...>::linkReference(const unsigned step, unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkReference(var[i], step, pos++);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>    
+void Struct<T, U, Ms ...>::linkWeight(const unsigned step, unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkWeight(var[i], step, pos++);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>    
+void Struct<T, U, Ms ...>::linkFeedback(unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkFeedbackState(var[i], pos++);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>    
+void Struct<T, U, Ms ...>::linkEndReference(unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkEndReference(var[i], pos++);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>    
+void Struct<T, U, Ms ...>::linkEndWeight(unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkEndWeight(var[i], pos++);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+void Struct<T, U, Ms ...>::linkParameter(const unsigned step, unsigned &pos){/*{{{*/
+  for(unsigned i = 0; i < var.size(); i++){
+    solver->linkParameter(var[i], step, pos++);
+  }
+}/*}}}*/
+
+/*}}}*/
+
+/* StructArray {{{*/
+
+template <typename T, typename U, U T::* ... Ms>
+class StructArray{/*{{{*/
+  Solver * const solver;
+  std::vector<Struct<T, U, Ms ...>> var;
+  public:
+    explicit StructArray(Solver * const solver_, unsigned n);
+    Struct<T, U, Ms ...>& operator[] (unsigned x) { return var[x]; };
+    Struct<T, U, Ms ...>& back()                  { return var.back(); };
+    unsigned size() const                { return var.size(); };
+    std::vector<T> get() const;
+    void set(std::vector<T> const& var_);
+    void set(T const& var_);
+    void linkState(unsigned &pos);
+    void linkControl(unsigned &pos);
+    void linkReference(unsigned &pos);
+    void linkWeight(unsigned &pos);
+    void linkParameter(unsigned &pos);
+    bool checkVector(unsigned n);
+};/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+StructArray<T,U,Ms ...>::StructArray(Solver * const solver_, unsigned n):/*{{{*/
+  solver(solver_),
+  var(n, Struct<T,U,Ms ...>(solver_))
+{
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+bool StructArray<T,U,Ms...>::checkVector(unsigned n){/*{{{*/
+  return var.size() == n;
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+std::vector<T> StructArray<T,U,Ms...>::get() const{ /*{{{*/
+  std::vector<T> a(var.size());
+  for(unsigned i=0; i < var.size(); i++){
+    a[i] = var[i].get();
+  };
+  return a; 
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+void StructArray<T,U,Ms...>::set(std::vector<T> const& var_){/*{{{*/
+  for(unsigned i=0; i < var.size(); i++){
+    var[i].set(var_[i]);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+void StructArray<T,U,Ms...>::set(T const& var_){/*{{{*/
+  for(unsigned i=0; i < var.size(); i++){
+    var[i].set(var_);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+void StructArray<T,U,Ms...>::linkState(unsigned &pos){/*{{{*/
+  if (!checkVector(solver->getN() +1)){
+    std::cout<<"linkState: Error in vector dimension"<<std::endl;
+    exit(1);
+  }
+  unsigned initial_pos = pos;
+  for(unsigned step=0; step < solver->getN() + 1; step++){
+    pos = initial_pos;
+    var[step].linkState(step, pos);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+void StructArray<T,U,Ms...>::linkReference(unsigned &pos){/*{{{*/
+  if (!checkVector(solver->getN() +1) && !checkVector(solver->getN())){
+    std::cout<<"linkReference: Error in vector dimension"<<std::endl;
+    exit(1);
+  }
+  unsigned initial_pos = pos;
+  for(unsigned step=0; step < solver->getN(); step++){
+    pos = initial_pos;
+    var[step].linkReference(step, pos);
+  }
+  if( !checkVector(solver->getN()) ){//The user wants to include EndReference in the same array
+    pos = initial_pos;
+    var.back().linkEndReference(pos);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+void StructArray<T,U,Ms...>::linkWeight(unsigned &pos){/*{{{*/
+  if (!checkVector(solver->getN() +1) && !checkVector(solver->getN()) && !checkVector(2)){
+    std::cout<<"linkWeight: Error in vector dimension"<<std::endl;
+    exit(1);
+  }
+  unsigned initial_pos = pos;
+  unsigned step;
+  for(step=0; step < var.size() - 1; step++){
+    pos = initial_pos;
+    var[step].linkWeight(step, pos);
+  }
+  if( checkVector(solver->getN()) ){
+    pos = initial_pos;
+    var.back().linkWeight(step, pos);
+  }
+  else{//The user wants to include EndWeights in the same array (2 steps for fixed weights)
+    pos = initial_pos;
+    var.back().linkEndWeight(pos);
+  }
+
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+void StructArray<T,U,Ms...>::linkControl(unsigned &pos){/*{{{*/
+  if (!checkVector(solver->getN())){
+    std::cout<<"linkControl: Error in vector dimension"<<std::endl;
+    exit(1);
+  }
+  unsigned initial_pos = pos;
+  for(unsigned step=0; step < solver->getN(); step++){
+    pos = initial_pos;
+    var[step].linkControl(step, pos);
+  }
+}/*}}}*/
+
+template <typename T, typename U, U T::* ... Ms>
+void StructArray<T,U,Ms...>::linkParameter(unsigned &pos){/*{{{*/
+  if (!checkVector(solver->getN() + 1)){
+    std::cout<<"linkParameter: Error in vector dimension"<<std::endl;
+    exit(1);
+  }
+  unsigned initial_pos = pos;
+  for(unsigned step=0; step < solver->getN() + 1; step++){
+    pos = initial_pos;
+    var[step].linkParameter(step, pos);
+  }
+}/*}}}*/
+
+/*}}}*/
+
+/*}}}*/
+
+}
 #endif
 
