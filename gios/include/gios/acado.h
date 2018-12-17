@@ -29,6 +29,7 @@ namespace gios{
 
       void getParameters(Parameters &p) override;
       unsigned getN() override;
+      double getKKTTolerance() override;
 
       void solve() override;
       void simulate() override;
@@ -105,6 +106,10 @@ void AcadoSolver::getParameters(Parameters &p){//{{{
 
 unsigned AcadoSolver::getN(){/*{{{*/
   return ACADO_N;
+}/*}}}*/
+
+double AcadoSolver::getKKTTolerance(){/*{{{*/
+  return acado_getKKT();
 }/*}}}*/
 
 void AcadoSolver::solve(){//{{{

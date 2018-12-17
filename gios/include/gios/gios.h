@@ -39,6 +39,7 @@ class Solver{/*{{{*/
 
     virtual void getParameters(Parameters &p) = 0;
     virtual unsigned getN() = 0;
+    virtual double getKKTTolerance() = 0;
 
     virtual void solve()=0;
     virtual void simulate()=0;
