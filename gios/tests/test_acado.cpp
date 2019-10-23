@@ -1531,16 +1531,16 @@ TEST(StructArray, get){/*{{{*/
 
 /* Struct Nested{{{*/
 
-TEST(StructNested, construct){/*{{{*/
-  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-  gios::Struct<Parent, double, &Parent::x, 
-                              &Parent::y, 
-                              &Parent::z,
-                              &Parent::r,
-                              &Parent::child::a
-                 > state (solver.get());
-  EXPECT_EQ(state.size(), 5); 
-}//}}}
+//TEST(StructNested, construct){/*{{{*/
+//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+//  gios::Struct<Parent, double, &Parent::x, 
+//                              &Parent::y, 
+//                              &Parent::z,
+//                              &Parent::r,
+//                              &Parent::child::a
+//                 > state (solver.get());
+//  EXPECT_EQ(state.size(), 5); 
+//}//}}}
 //
 //TEST(Struct, linkState){/*{{{*/
 //  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);

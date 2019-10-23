@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(gios)
-add_compile_options(-std=c++11)
+add_compile_options(-std=c++17)
 
 set(ACADO_ROOT_DIR tests/solvers/drone_mpc_full_generated)
 
