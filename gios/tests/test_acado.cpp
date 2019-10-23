@@ -1529,238 +1529,549 @@ TEST(StructArray, get){/*{{{*/
 
 /*}}}*/
 
-/* Struct Nested{{{*/
+/* Nested Struct{{{*/
 
-//TEST(StructNested, construct){/*{{{*/
-//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-//  gios::Struct<Parent, double, &Parent::x, 
-//                              &Parent::y, 
-//                              &Parent::z,
-//                              &Parent::r,
-//                              &Parent::child::a
-//                 > state (solver.get());
-//  EXPECT_EQ(state.size(), 5); 
-//}//}}}
-//
-//TEST(Struct, linkState){/*{{{*/
-//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-//  gios::Struct<TestStruct, double, &TestStruct::x, 
-//                              &TestStruct::y, 
-//                              &TestStruct::z,
-//                              &TestStruct::r
-//                 > state (solver.get());
-//  gios::Parameters p;
-//  solver->getParameters(p);
-//  gios::VariablePtr x;
-//  unsigned base_pos = 0;
-//  unsigned pos;
-//  for(unsigned step = 0; step<  p.n + 1; step++){//Step
-//    pos = base_pos;
-//    state.linkState(step, pos);
-//    for(pos = base_pos; pos < state.size(); pos++){//Var
-//      solver->linkState(x, step, pos);
-//      EXPECT_EQ(state[pos], x); 
-//    }
-//  }
-//}//}}}
-//
-//TEST(Struct, linkControl){/*{{{*/
-//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-//  gios::Struct<TestStruct, double, &TestStruct::x, 
-//                              &TestStruct::y, 
-//                              &TestStruct::z,
-//                              &TestStruct::r
-//                 > control (solver.get());
-//  gios::Parameters p;
-//  solver->getParameters(p);
-//  gios::VariablePtr x;
-//  unsigned base_pos = 0;
-//  unsigned pos;
-//  for(unsigned step = 0; step<  p.n; step++){//Step
-//    pos = base_pos;
-//    control.linkControl(step, pos);
-//    for(pos = base_pos; pos < control.size(); pos++){//Var
-//      solver->linkControl(x, step, pos);
-//      EXPECT_EQ(control[pos], x); 
-//    }
-//  }
-//}//}}}
-//
-//TEST(Struct, linkParameter){/*{{{*/
-//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-//  gios::Struct<TestStruct, double, &TestStruct::x, 
-//                              &TestStruct::y, 
-//                              &TestStruct::z,
-//                              &TestStruct::r
-//                 > parameter (solver.get());
-//  gios::Parameters p;
-//  solver->getParameters(p);
-//  gios::VariablePtr x;
-//  unsigned base_pos = 0;
-//  unsigned pos;
-//  for(unsigned step = 0; step<  p.n + 1; step++){//Step
-//    pos = base_pos;
-//    parameter.linkParameter(step, pos);
-//    for(pos = base_pos; pos < parameter.size(); pos++){//Var
-//      solver->linkParameter(x, step, pos);
-//      EXPECT_EQ(parameter[pos], x); 
-//    }
-//  }
-//}//}}}
-//
-//TEST(Struct, linkReference){/*{{{*/
-//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-//  gios::Struct<TestStruct, double, &TestStruct::x, 
-//                              &TestStruct::y, 
-//                              &TestStruct::z,
-//                              &TestStruct::r
-//                 > state (solver.get());
-//  gios::Parameters p;
-//  solver->getParameters(p);
-//  gios::VariablePtr x;
-//  unsigned base_pos = 0;
-//  unsigned pos;
-//  for(unsigned step = 0; step<  p.n; step++){//Step
-//    pos = base_pos;
-//    state.linkReference(step, pos);
-//    for(pos = base_pos; pos < state.size(); pos++){//Var
-//      solver->linkReference(x, step, pos);
-//      EXPECT_EQ(state[pos], x); 
-//    }
-//  }
-//}//}}}
-//
-//TEST(Struct, linkWeight){/*{{{*/
-//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-//  gios::Struct<TestStruct, double, &TestStruct::x, 
-//                              &TestStruct::y, 
-//                              &TestStruct::z,
-//                              &TestStruct::r
-//                 > state (solver.get());
-//  gios::Parameters p;
-//  solver->getParameters(p);
-//  gios::VariablePtr x;
-//  unsigned base_pos = 0;
-//  unsigned pos = base_pos;
-//  state.linkWeight(0, pos);//Constant weighting matrix
-//  for(pos = base_pos; pos < state.size(); pos++){//Var
-//    solver->linkWeight(x, 0, pos);
-//    EXPECT_EQ(state[pos], x); 
-//  }
-//}//}}}
-//
-//TEST(Struct, linkFeedback){/*{{{*/
-//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-//  gios::Struct<TestStruct, double, &TestStruct::x, 
-//                              &TestStruct::y, 
-//                              &TestStruct::z,
-//                              &TestStruct::r
-//                 > state (solver.get());
-//  gios::Parameters p;
-//  solver->getParameters(p);
-//  gios::VariablePtr x;
-//  unsigned base_pos = 0;
-//  unsigned pos;
-//  pos = base_pos;
-//  state.linkFeedback(pos);
-//  for(pos = base_pos; pos < state.size(); pos++){//Var
-//    solver->linkFeedbackState(x, pos);
-//    EXPECT_EQ(state[pos], x); 
-//  }
-//}//}}}
-//
-//TEST(Struct, linkEndReference){/*{{{*/
-//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-//  gios::Struct<TestStruct, double, &TestStruct::x, 
-//                              &TestStruct::y, 
-//                              &TestStruct::z,
-//                              &TestStruct::r
-//                 > state (solver.get());
-//  gios::Parameters p;
-//  solver->getParameters(p);
-//  gios::VariablePtr x;
-//  unsigned base_pos = 0;
-//  unsigned pos;
-//  pos = base_pos;
-//  state.linkEndReference(pos);
-//  for(pos = base_pos; pos < state.size(); pos++){//Var
-//    solver->linkEndReference(x, pos);
-//    EXPECT_EQ(state[pos], x); 
-//  }
-//}//}}}
-//
-//TEST(Struct, linkEndWeight){/*{{{*/
-//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-//  gios::Struct<TestStruct, double, &TestStruct::x, 
-//                              &TestStruct::y, 
-//                              &TestStruct::z,
-//                              &TestStruct::r
-//                 > state (solver.get());
-//  gios::Parameters p;
-//  solver->getParameters(p);
-//  gios::VariablePtr x;
-//  unsigned base_pos = 0;
-//  unsigned pos;
-//  pos = base_pos;
-//  state.linkEndWeight(pos);
-//  for(pos = base_pos; pos < state.size(); pos++){//Var
-//    solver->linkEndWeight(x, pos);
-//    EXPECT_EQ(state[pos], x); 
-//  }
-//}//}}}
-//
-//TEST(Struct, set){/*{{{*/
-//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-//  gios::Struct<TestStruct, double, &TestStruct::x, 
-//                              &TestStruct::y, 
-//                              &TestStruct::z,
-//                              &TestStruct::r
-//                 > state (solver.get());
-//  srand (time(NULL));
-//  TestStruct foo {(double)rand(), (double)rand(), (double)rand(), (double)rand()};
-//  gios::Parameters p;
-//  solver->getParameters(p);
-//  gios::VariablePtr x;
-//  unsigned base_pos = 0;
-//  unsigned pos;
-//  for(unsigned step = 0; step<  p.n + 1; step++){//Step
-//    pos = base_pos;
-//    state.linkState(step, pos);
-//    state.set(foo);
-//    pos = base_pos;
-//    solver->linkState(x, step, pos);
-//    EXPECT_EQ(foo.x, *(x + 0)); 
-//    EXPECT_EQ(foo.y, *(x + 1)); 
-//    EXPECT_EQ(foo.z, *(x + 2)); 
-//    EXPECT_EQ(foo.r, *(x + 3)); 
-//  }
-//}//}}}
-//
-//TEST(Struct, get){/*{{{*/
-//  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-//  gios::Struct<TestStruct, double, &TestStruct::x, 
-//                              &TestStruct::y, 
-//                              &TestStruct::z,
-//                              &TestStruct::r
-//                 > state (solver.get());
-//  srand (time(NULL));
-//  TestStruct foo {(double)rand(), (double)rand(), (double)rand(), (double)rand()};
-//  gios::Parameters p;
-//  solver->getParameters(p);
-//  gios::VariablePtr x;
-//  unsigned base_pos = 0;
-//  unsigned pos;
-//  for(unsigned step = 0; step<  p.n + 1; step++){//Step
-//    pos = base_pos;
-//    state.linkState(step, pos);
-//    state.set(foo);
-//    EXPECT_EQ(foo.x, state.get().x); 
-//    EXPECT_EQ(foo.y, state.get().y); 
-//    EXPECT_EQ(foo.z, state.get().z); 
-//    EXPECT_EQ(foo.r, state.get().r); 
-//  }
-//}//}}}
-//
+TEST(NestedStruct, construct){/*{{{*/ 
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                               gios::Member<&Parent::y>, 
+                               gios::Member<&Parent::child, &Child::a>
+                 > state (solver.get());
+  EXPECT_EQ(state.size(), 3); 
+}//}}}
+
+TEST(NestedStruct, linkState){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos;
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    pos = base_pos;
+  state.linkState(step, pos);
+    for(pos = base_pos; pos < state.size(); pos++){//Var
+      solver->linkState(x, step, pos);
+      EXPECT_EQ(state[pos], x); 
+    }
+  }
+}//}}}
+
+TEST(NestedStruct, linkControl){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > control (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos;
+  for(unsigned step = 0; step<  p.n; step++){//Step
+    pos = base_pos;
+    control.linkControl(step, pos);
+    for(pos = base_pos; pos < control.size(); pos++){//Var
+      solver->linkControl(x, step, pos);
+      EXPECT_EQ(control[pos], x); 
+    }
+  }
+}//}}}
+
+TEST(NestedStruct, linkParameter){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > parameter (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos;
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    pos = base_pos;
+    parameter.linkParameter(step, pos);
+    for(pos = base_pos; pos < parameter.size(); pos++){//Var
+      solver->linkParameter(x, step, pos);
+      EXPECT_EQ(parameter[pos], x); 
+    }
+  }
+}//}}}
+
+TEST(NestedStruct, linkReference){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos;
+  for(unsigned step = 0; step<  p.n; step++){//Step
+    pos = base_pos;
+    state.linkReference(step, pos);
+    for(pos = base_pos; pos < state.size(); pos++){//Var
+      solver->linkReference(x, step, pos);
+      EXPECT_EQ(state[pos], x); 
+    }
+  }
+}//}}}
+
+TEST(NestedStruct, linkWeight){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos = base_pos;
+  state.linkWeight(0, pos);//Constant weighting matrix
+  for(pos = base_pos; pos < state.size(); pos++){//Var
+    solver->linkWeight(x, 0, pos);
+    EXPECT_EQ(state[pos], x); 
+  }
+}//}}}
+
+TEST(NestedStruct, linkFeedback){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos;
+  pos = base_pos;
+  state.linkFeedback(pos);
+  for(pos = base_pos; pos < state.size(); pos++){//Var
+    solver->linkFeedbackState(x, pos);
+    EXPECT_EQ(state[pos], x); 
+  }
+}//}}}
+
+TEST(NestedStruct, linkEndReference){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos;
+  pos = base_pos;
+  state.linkEndReference(pos);
+  for(pos = base_pos; pos < state.size(); pos++){//Var
+    solver->linkEndReference(x, pos);
+    EXPECT_EQ(state[pos], x); 
+  }
+}//}}}
+
+TEST(NestedStruct, linkEndWeight){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos;
+  pos = base_pos;
+  state.linkEndWeight(pos);
+  for(pos = base_pos; pos < state.size(); pos++){//Var
+    solver->linkEndWeight(x, pos);
+    EXPECT_EQ(state[pos], x); 
+  }
+}//}}}
+
+TEST(NestedStruct, set){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  srand (time(NULL));
+  Parent foo;
+  foo.x = (double)rand();
+  foo.y = (double)rand();
+  foo.child.a = (double)rand();
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos;
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    pos = base_pos;
+    state.linkState(step, pos);
+    state.set(foo);
+    pos = base_pos;
+    solver->linkState(x, step, pos);
+    EXPECT_EQ(foo.x, *(x + 0)); 
+    EXPECT_EQ(foo.y, *(x + 1)); 
+    EXPECT_EQ(foo.child.a, *(x + 2)); 
+  }
+}//}}}
+
+TEST(NestedStruct, get){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  srand (time(NULL));
+  Parent foo;
+  foo.x = (double)rand();
+  foo.y = (double)rand();
+  foo.child.a = (double)rand();
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos;
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    pos = base_pos;
+    state.linkState(step, pos);
+    state.set(foo);
+    EXPECT_EQ(foo.x, state.get().x); 
+    EXPECT_EQ(foo.y, state.get().y); 
+    EXPECT_EQ(foo.child.a, state.get().child.a); 
+  }
+}//}}}
+
+/*}}}*/
+
+/* NestedStructArray Tests{{{*/
+
+TEST(NestedStructArray, construct){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > states (solver.get(), solver->getN() + 1);
+  EXPECT_EQ(states.size(), solver->getN() + 1); 
+}//}}}
+
+TEST(NestedStructArray, linkState){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > states (solver.get(), solver->getN() + 1);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  const unsigned base_pos = 0;
+  unsigned pos = base_pos;
+  states.linkState(pos);
+  for(unsigned step = 0; step <  p.n + 1; step++){//Step
+    pos = base_pos;
+    state.linkState(step, pos);
+    for(pos = base_pos; pos < state.size(); pos++){//Var
+      EXPECT_EQ(states[step][pos],state[pos]);
+    }
+  }
+}//}}}
+
+TEST(NestedStructArray, linkReferenceN1){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > states (solver.get(), solver->getN() + 1);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  const unsigned base_pos = 0;
+  unsigned step = 0, pos = base_pos;
+  states.linkReference(pos); pos = base_pos;
+  for(step = 0; step<  p.n; step++){//Step
+    pos = base_pos;
+    state.linkReference(step, pos);
+    for(pos = base_pos; pos < state.size(); pos++){//Var
+      EXPECT_EQ(states[step][pos],state[pos]);
+    }
+  }
+  pos = base_pos;
+  state.linkEndReference(pos);
+  for(pos = base_pos; pos < state.size(); pos++){//Var
+    EXPECT_EQ(states[step][pos],state[pos]);
+  }
+}//}}}
+
+TEST(NestedStructArray, linkReferenceN){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > states (solver.get(), solver->getN() + 1);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  const unsigned base_pos = 0;
+  unsigned step = 0, pos = base_pos;
+  states.linkReference(pos); pos = base_pos;
+  for(step = 0; step<  p.n; step++){//Step
+    pos = base_pos;
+    state.linkReference(step, pos);
+    for(pos = base_pos; pos < state.size(); pos++){//Var
+      EXPECT_EQ(states[step][pos],state[pos]);
+    }
+  }
+}//}}}
+
+TEST(NestedStructArray, linkWeight2){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > states (solver.get(), 2);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  const unsigned base_pos = 0;
+  unsigned step = 0, pos = base_pos;
+  states.linkWeight(pos); pos = base_pos;
+  state.linkWeight(0, pos);
+  for(pos = base_pos; pos < state.size(); pos++){//Var
+    EXPECT_EQ(states[step][pos],state[pos]);
+  }
+  step++;
+  pos = base_pos;
+  state.linkEndWeight(pos);
+  for(pos = base_pos; pos < state.size(); pos++){//Var
+    EXPECT_EQ(states[step][pos],state[pos]);
+  }
+}//}}}
+
+TEST(NestedStructArray, linkWeightN1){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > states (solver.get(), solver->getN() + 1);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  const unsigned base_pos = 0;
+  unsigned step = 0, pos = base_pos;
+  states.linkWeight(pos); pos = base_pos;
+  for(step = 0; step<  p.n; step++){//Step
+    pos = base_pos;
+    state.linkWeight(step, pos);
+    for(pos = base_pos; pos < state.size(); pos++){//Var
+      EXPECT_EQ(states[step][pos],state[pos]);
+    }
+  }
+  pos = base_pos;
+  state.linkEndWeight(pos);
+  for(pos = base_pos; pos < state.size(); pos++){//Var
+    EXPECT_EQ(states[step][pos],state[pos]);
+  }
+}//}}}
+
+TEST(NestedStructArray, linkWeightN){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > states (solver.get(), solver->getN() + 1);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  const unsigned base_pos = 0;
+  unsigned step = 0, pos = base_pos;
+  states.linkWeight(pos); pos = base_pos;
+  for(step = 0; step<  p.n; step++){//Step
+    pos = base_pos;
+    state.linkWeight(step, pos);
+    for(pos = base_pos; pos < state.size(); pos++){//Var
+      EXPECT_EQ(states[step][pos],state[pos]);
+    }
+  }
+}//}}}
+
+TEST(NestedStructArray, linkControl){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > controls (solver.get(), solver->getN());
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > control (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos = base_pos;
+  controls.linkControl(pos);
+  for(unsigned step = 0; step<  p.n; step++){//Step
+    pos = base_pos;
+    control.linkControl(step, pos);
+    for(pos = base_pos; pos < control.size(); pos++){//Var
+      EXPECT_EQ(controls[step][pos],control[pos]);
+    }
+  }
+}//}}}
+
+TEST(NestedStructArray, linkParameter){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > parameters (solver.get(), solver->getN() + 1);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > parameter (solver.get());
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos = base_pos;
+  parameters.linkParameter(pos);
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    pos = base_pos;
+    parameter.linkParameter(step, pos);
+    for(pos = base_pos; pos < parameter.size(); pos++){//Var
+      EXPECT_EQ(parameters[step][pos],parameter[pos]);
+    }
+  }
+}//}}}
+
+TEST(NestedStructArray, set){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > states (solver.get(), solver->getN() + 1);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  srand (time(NULL));
+  Parent foo;
+  foo.x = (double)rand();
+  foo.y = (double)rand();
+  foo.child.a = (double)rand();
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos = 0;
+  states.linkState(pos);
+  states.set(foo);
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    EXPECT_EQ(states[step].get().x, foo.x); 
+    EXPECT_EQ(states[step].get().y, foo.y); 
+    EXPECT_EQ(states[step].get().child.a, foo.child.a); 
+  }
+}//}}}
+
+TEST(NestedStructArray, setArray){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > states (solver.get(), solver->getN() + 1);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  std::vector<Parent> foo_array(solver->getN() +1);
+  gios::Parameters p;
+  solver->getParameters(p);
+  gios::VariablePtr x;
+  unsigned base_pos = 0;
+  unsigned pos = 0;
+  states.linkState(pos);
+  srand (time(NULL));
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    foo_array[step].x = (double)rand();
+    foo_array[step].y = (double)rand();
+    foo_array[step].z = (double)rand();
+    foo_array[step].r = (double)rand();
+  }
+  states.set(foo_array);
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    EXPECT_EQ(states[step].get().x, foo_array[step].x); 
+    EXPECT_EQ(states[step].get().y, foo_array[step].y); 
+    EXPECT_EQ(states[step].get().child.a, foo_array[step].child.a); 
+  }
+}//}}}
+
+TEST(NestedStructArray, get){/*{{{*/
+  std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
+  gios::NestedStructArray<Parent, double, gios::Member<&Parent::x>, 
+                                          gios::Member<&Parent::y>, 
+                                          gios::Member<&Parent::child, &Child::a>
+                         > states (solver.get(), solver->getN() + 1);
+  gios::NestedStruct<Parent, double, gios::Member<&Parent::x>, 
+                                     gios::Member<&Parent::y>, 
+                                     gios::Member<&Parent::child, &Child::a>
+                    > state (solver.get());
+  std::vector<Parent> foo_array(solver->getN() +1);
+  gios::Parameters p;
+  solver->getParameters(p);
+  unsigned base_pos = 0;
+  unsigned pos = 0;
+  srand (time(NULL));
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    foo_array[step].x = (double)rand();
+    foo_array[step].y = (double)rand();
+    foo_array[step].z = (double)rand();
+    foo_array[step].r = (double)rand();
+  }
+  states.linkState(pos);
+  states.set(foo_array);
+  for(unsigned step = 0; step<  p.n + 1; step++){//Step
+    pos = base_pos;
+    state.linkState(step, pos);
+    EXPECT_EQ(states.get()[step].x, state.get().x); 
+    EXPECT_EQ(states.get()[step].y, state.get().y); 
+    EXPECT_EQ(states.get()[step].child.a, state.get().child.a); 
+  }
+}//}}}
+
 /*}}}*/
 
 int main(int argc, char **argv){
