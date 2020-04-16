@@ -4,5 +4,5 @@ GIOS is a Generalistic Interface for Optimization Solvers. Is written in C++ and
 
 # Documentation
 
-Docs: [docs](https://gios.readthedocs.io/en/latest/)
+ [Documentation pages](https://gios.readthedocs.io/en/latest/)
   
