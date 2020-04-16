@@ -6,7 +6,7 @@ A General Interface for embedded Optimization Solvers (GIOS). It's written in C+
 - Use the same interface across different solvers.
 - Perform zero-copy solver data manipulation.
 
-As a result, this library is highly suitable for embedded applications such as Model Predictive Control. (e.g https://arxiv.org/abs/2001.08012)
+As a result, this library is highly suitable for embedded applications such as Model Predictive Control ([paper](https://arxiv.org/abs/2001.08012)).
 
 ## Supported Solvers
 
