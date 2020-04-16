@@ -30,7 +30,7 @@ Array for the same variable along the horizon.
 
 ### gios::Struct
 
-Linking a simple struct
+Struct mapping to solver data.
 
 ```cpp
   struct MyState{
@@ -49,7 +49,7 @@ Linking a simple struct
 
 ### gios::StructArray
 
-Linking a struct array
+Linking Struct array to solver data
 
 ```cpp
   struct MyState{
@@ -91,7 +91,7 @@ Globally, you can declare your state
 ```
 
 ### gios::NestedStructArray
-Linking nested struct (compatible with ROS msgs)
+Linking nested struct array (compatible with ROS msgs)
 
 Globally, you can declare your state
 ```cpp
