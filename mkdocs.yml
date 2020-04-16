@@ -1,4 +1,5 @@
 site_name: Gios
 nav:
     - Home: index.md
+    - Basic Usage: usage.md
 theme: readthedocs

@@ -1,20 +1,6 @@
-# GIOS
+# GIOS: Basic usage
 
-A General Interface for embedded Optimization Solvers (GIOS). It's written in C++ to:
-
-- Naturally interact with your solver's generated code using your own data structures.
-- Use the same interface across different solvers.
-- Perform zero-copy solver data manipulation.
-
-As a result, this library is highly suitable for embedded applications such as Model Predictive Control. (e.g https://arxiv.org/abs/2001.08012)
-
-## Supported Solvers
-
-- [ACADO Toolkit](https://acado.github.io/)
-
-## Basic Usage
-
-### gios::Variable
+## gios::Variable
 
 One to one mapping to solver data.
 
@@ -26,7 +12,7 @@ One to one mapping to solver data.
   x.set(4.0);
 ```
 
-### gios::VariableArray
+## gios::VariableArray
 
 Array for the same variable along the horizon.
 
@@ -38,7 +24,7 @@ Array for the same variable along the horizon.
   x.set(4.0);
 ```
 
-### gios::Struct
+## gios::Struct
 
 Struct mapping to solver data.
 
@@ -57,7 +43,7 @@ Struct mapping to solver data.
   my_state.set(another_state);
 ```
 
-### gios::StructArray
+## gios::StructArray
 
 Linking Struct array to solver data
 
@@ -76,7 +62,7 @@ Linking Struct array to solver data
   my_state.set(another_state);
 ```
 
-### gios::NestedStruct
+## gios::NestedStruct
 Linking nested struct (compatible with ROS msgs)
 
 Globally, you can declare your state
@@ -100,7 +86,7 @@ Globally, you can declare your state
   my_state.set(my_pose);
 ```
 
-### gios::NestedStructArray
+## gios::NestedStructArray
 Linking nested struct array (compatible with ROS msgs)
 
 Globally, you can declare your state
