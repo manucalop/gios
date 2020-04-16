@@ -47,7 +47,7 @@ Linking a simple struct
   my_state.set(another_state);
 ```
 
-### gios::Struct
+### gios::StructArray
 
 Linking a struct array
 
@@ -56,7 +56,7 @@ Linking a struct array
     double x, y, z, yaw;
   };
   std::unique_ptr<gios::Solver> solver( new gios::AcadoSolver);
-  gios::Struct<MyState, double, &TestStruct::x,
+  gios::StructArray<MyState, double, &TestStruct::x,
                                 &TestStruct::y,
                                 &TestStruct::z,
                                 &TestStruct::yaw > my_state (solver.get(), solver.getN());
