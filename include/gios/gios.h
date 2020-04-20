@@ -590,11 +590,17 @@ class NestedStruct{/*{{{*/
   std::vector<U *> var{sizeof...(Ts)};
 
   template <std::size_t ... Is>
-  T get(std::index_sequence<Is...>) const
+  T get(std::index_sequence<Is...>) const //Deprecated
   {
       T res;
       ((Ts{}.get(res) = *var[Is]), ...); // Fold expression C++17
       return res;
+  }
+  template <std::size_t ... Is>
+  //Zero-copy getter
+  void get(std::index_sequence<Is...>, T const& t)
+  {
+      ((Ts{}.get(t) = *var[Is]), ...); // Fold expression C++17
   }
   template <std::size_t ... Is>
   void set(std::index_sequence<Is...>, T const& t)
@@ -607,6 +613,7 @@ class NestedStruct{/*{{{*/
 
   T get() const { return get(std::index_sequence_for<Ts...>()); }
   void set(const T& t) { return set(std::index_sequence_for<Ts...>(), t); }
+  void get(const T& t) { return get(std::index_sequence_for<Ts...>(), t); }
   U* & operator[] (unsigned x) { return var[x]; };
   unsigned size() const        { return var.size(); };
   void linkState(        const unsigned step, unsigned &pos);
@@ -723,6 +730,7 @@ std::vector<T> NestedStructArray<T,U,Ts...>::get() const{ /*{{{*/
   std::vector<T> a(var.size());
   for(unsigned i=0; i < var.size(); i++){
     a[i] = var[i].get();
+    /* var[i].get(a[i]); */
   };
   return a; 
 }/*}}}*/

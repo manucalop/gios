@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>gios</name>
-  <version>0.0.0</version>
-  <description>The gios package</description>
+  <version>1.0.0</version>
+  <description>
+GIOS is a Generalistic Interface for Optimization Solvers. Is written in C++ and allows you to interact with your solver's generated code using your own data structures and a standardized interface. With GIOS, you can select the solver to use and switch between them without changing your code. Is written in C++ and, since it links the data without storing it, is very lightweight and suitable for embedded applications like Model Predictive Control (MPC).
+  </description>
 
-  <maintainer email="manu@todo.todo">manu</maintainer>
+  <maintainer email="manucalop@gmail.com">Manuel Castillo-Lopez</maintainer>
 
 
-  <license>TODO</license>
+  <license>GPLv3</license>
 
 
   <buildtool_depend>catkin</buildtool_depend>
