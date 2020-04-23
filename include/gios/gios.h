@@ -590,30 +590,21 @@ class NestedStruct{/*{{{*/
   std::vector<U *> var{sizeof...(Ts)};
 
   template <std::size_t ... Is>
-  T get(std::index_sequence<Is...>) const //Deprecated
-  {
-      T res;
-      ((Ts{}.get(res) = *var[Is]), ...); // Fold expression C++17
-      return res;
-  }
-  template <std::size_t ... Is>
-  //Zero-copy getter
-  void get(std::index_sequence<Is...>, T const& t)
+  void doGet(std::index_sequence<Is...>, T& t)
   {
       ((Ts{}.get(t) = *var[Is]), ...); // Fold expression C++17
   }
   template <std::size_t ... Is>
-  void set(std::index_sequence<Is...>, T const& t)
+  void doSet(std::index_sequence<Is...>, T const& t)
   {
       ((*var[Is] = Ts{}.get(t)), ...); // Fold expression C++17
   }
 
  public:
   NestedStruct(Solver * const solver_);
-
-  T get() const { return get(std::index_sequence_for<Ts...>()); }
-  void set(const T& t) { return set(std::index_sequence_for<Ts...>(), t); }
-  void get(const T& t) { return get(std::index_sequence_for<Ts...>(), t); }
+  void set(const T& t) { return doSet(std::index_sequence_for<Ts...>(), t); }
+  void get(T& t) { return doGet(std::index_sequence_for<Ts...>(), t); }
+  T get() { T t; doGet(std::index_sequence_for<Ts...>(), t); return t; }
   U* & operator[] (unsigned x) { return var[x]; };
   unsigned size() const        { return var.size(); };
   void linkState(        const unsigned step, unsigned &pos);
@@ -702,9 +693,13 @@ class NestedStructArray{/*{{{*/
     NestedStruct<T, U, Ts ...>& operator[] (unsigned x) { return var[x]; };
     NestedStruct<T, U, Ts ...>& back()                  { return var.back(); };
     unsigned size() const                { return var.size(); };
-    std::vector<T> get() const;
     void set(std::vector<T> const& var_);
     void set(T const& var_);
+    void set(T const& var_, unsigned const& step_);
+    std::vector<T> get();
+    T get(unsigned const& step_);
+    void get(std::vector<T>& var_);
+    void get(T& var_, unsigned const& step_);
     void linkState(unsigned &pos);
     void linkControl(unsigned &pos);
     void linkReference(unsigned &pos);
@@ -726,16 +721,6 @@ bool NestedStructArray<T,U,Ts...>::checkVector(unsigned n){/*{{{*/
 }/*}}}*/
 
 template <typename T, typename U, typename ...Ts>
-std::vector<T> NestedStructArray<T,U,Ts...>::get() const{ /*{{{*/
-  std::vector<T> a(var.size());
-  for(unsigned i=0; i < var.size(); i++){
-    a[i] = var[i].get();
-    /* var[i].get(a[i]); */
-  };
-  return a; 
-}/*}}}*/
-
-template <typename T, typename U, typename ...Ts>
 void NestedStructArray<T,U,Ts...>::set(std::vector<T> const& var_){/*{{{*/
   for(unsigned i=0; i < var.size(); i++){
     var[i].set(var_[i]);
@@ -746,6 +731,37 @@ template <typename T, typename U, typename ...Ts>
 void NestedStructArray<T,U,Ts...>::set(T const& var_){/*{{{*/
   for(unsigned i=0; i < var.size(); i++){
     var[i].set(var_);
+  }
+}/*}}}*/
+
+template <typename T, typename U, typename ...Ts>
+void NestedStructArray<T,U,Ts...>::set(T const& var_, unsigned const& step_){/*{{{*/
+    var[step_].set(var_);
+}/*}}}*/
+
+template <typename T, typename U, typename ...Ts>
+std::vector<T> NestedStructArray<T,U,Ts...>::get(){ /*{{{*/
+  std::vector<T> a(var.size());
+  for(unsigned i=0; i < var.size(); i++){
+    var[i].get(a[i]);
+  };
+  return a; 
+}/*}}}*/
+
+template <typename T, typename U, typename ...Ts>
+T NestedStructArray<T,U,Ts...>::get(unsigned const& step_){/*{{{*/
+    return var[step_].get();
+}/*}}}*/
+
+template <typename T, typename U, typename ...Ts>
+void NestedStructArray<T,U,Ts...>::get(T& var_, unsigned const& step_){/*{{{*/
+    var[step_].get(var_);
+}/*}}}*/
+
+template <typename T, typename U, typename ...Ts>
+void NestedStructArray<T,U,Ts...>::get(std::vector<T>& var_){/*{{{*/
+  for(unsigned i=0; i < var.size(); i++){
+    var[i].get(var_[i]);
   }
 }/*}}}*/
 
